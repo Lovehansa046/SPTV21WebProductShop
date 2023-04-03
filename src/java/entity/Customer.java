@@ -15,7 +15,7 @@ public class Customer implements Serializable{
     private String firstname;
     private String lastname;
     private String phone;
-    private float money;
+    private float money; //Денег у клиентов
 
     public Customer() {
         

@@ -29,16 +29,18 @@ import session.CustomerFacade;
 @WebServlet(name = "HistoryServlet", urlPatterns = {
     "/saleProduct",
     "/createHistory",
-//    "/returnBook",
+    //    "/returnBook",
     "/updateHistory",
-    "/listHistories",
-})
+    "/listHistories",})
 public class HistoryServlets extends HttpServlet {
-    
-    @EJB CustomerFacade customerFacade;
-    @EJB ProductFacade productFacade;
-    @EJB HistoryFacade historyFacade;
-    
+
+    @EJB
+    CustomerFacade customerFacade;
+    @EJB
+    ProductFacade productFacade;
+    @EJB
+    HistoryFacade historyFacade;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -64,34 +66,51 @@ public class HistoryServlets extends HttpServlet {
             case "/createHistory":
                 String productId = request.getParameter("productId");
                 String customerId = request.getParameter("customerId");
-                if(productId == null || productId.isEmpty() || customerId == null || customerId.isEmpty()){
-                    request.setAttribute("info","Продукт или клиент не выбраны!");
+                if (productId == null || productId.isEmpty() || customerId == null || customerId.isEmpty()) {
+                    request.setAttribute("info", "Продукт или клиент не выбраны!");
                     request.getRequestDispatcher("/saleProduct").forward(request, response);
                     break;
                 }
                 Product product = productFacade.find(Long.parseLong(productId));
-                if(product.getQuantity()>0){
-                    product.setQuantity(product.getQuantity()-1);
-                    productFacade.edit(product);
+                if (product.getQuantity() > 0) {
                     Customer customer = customerFacade.find(Long.parseLong(customerId));
-                    History history = new History();
-                    history.setProduct(product);
-                    history.setCustomer(customer);
-                    history.setSaleProduct(new GregorianCalendar().getTime());
-                    historyFacade.create(history);
-                    request.setAttribute("info","Продукт продан");
-                    
-                }else{
-                    request.setAttribute("info","Книга не выдана, все экземпляры читаются");
-                    
+                    String countProduct = request.getParameter("countProduct"); //Клиент вводит кол-во товара
+
+                    if (product.getQuantity() >= Integer.valueOf(countProduct)) { //Проверяем сколько есть товара в наличии
+                        float priceProduct = Float.valueOf(countProduct) * product.getPrice(); //Считаем цену продукта исходя из кол-ва
+                        if (priceProduct < customer.getMoney()) { //Проверяем сколько денег у клиента
+                            float payCustomer = customer.getMoney() - priceProduct; //считаем сколько должен заплатить клиент
+                            product.setQuantity(product.getQuantity() - 1);
+                            productFacade.edit(product);
+                            History history = new History();
+                            history.setProduct(product);
+                            float purchaseOnly = payCustomer + history.getPurchase(); //считатет прибыль магазина за все время
+                            history.setPurchase(purchaseOnly); //Сохраняет данные
+                            history.setPayCustomer(payCustomer); //Сохраняем сколько заплатил клиент
+                            history.setCustomer(customer);
+                            history.setSaleProduct(new GregorianCalendar().getTime());
+                            historyFacade.create(history);
+                            request.setAttribute("info", "Продукт продан");
+
+                        } else {
+                            request.setAttribute("info", "Продукт не продан, у клиента не достаточно средств");
+
+                        }
+                    } else {
+                        request.setAttribute("info", "Продукт не продан, данного кол-во товара нет на складе");
+                    }
+
+                } else {
+                    request.setAttribute("info", "Продукт не продан, товара нет на складе");
+
                 }
-                request.getRequestDispatcher("/takeOnBook").forward(request, response);
+                request.getRequestDispatcher("/saleProduct").forward(request, response);
                 break;
-            case "/returnBook":
-                List<History> listHistoryWithTakedBooks = historyFacade.getHistoriesWithTakedBooks();
-                request.setAttribute("listHistoryWithTakedBooks", listHistoryWithTakedBooks);
-                request.getRequestDispatcher("/WEB-INF/history/returnBook.jsp").forward(request, response);
-                break;
+//            case "/returnBook":
+//                List<History> listHistoryWithTakedBooks = historyFacade.getHistoriesWithTakedBooks();
+//                request.setAttribute("listHistoryWithTakedBooks", listHistoryWithTakedBooks);
+//                request.getRequestDispatcher("/WEB-INF/history/returnBook.jsp").forward(request, response);
+//                break;
 //            case "/updateHistory":
 //                String historyId = request.getParameter("historyId");
 //                if(historyId == null || historyId.isEmpty()){
@@ -110,7 +129,7 @@ public class HistoryServlets extends HttpServlet {
 //                break;
             case "/listHistories":
                 request.setAttribute("listCustomers", customerFacade.findAll());
-                request.getRequestDispatcher("/WEB-INF/readers/listReaders.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/customers/listCustomers.jsp").forward(request, response);
                 break;
         }
     }

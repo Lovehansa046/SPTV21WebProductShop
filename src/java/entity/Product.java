@@ -26,7 +26,7 @@ public class Product implements Serializable {
 //    private List<Author> authors;
 //    private int publishedYear;
     private int quantity;
-    private float price;
+    private float price; //Цена товара
     private Cover cover;
 
     public Product() {

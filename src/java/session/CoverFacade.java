@@ -11,7 +11,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class CoverFacade extends AbstractFacade<Cover> {
 
-    @PersistenceContext(unitName = "SPTV21WebProductShopPU")
+    @PersistenceContext(unitName = "SPTV21WebLibraryPU")
     private EntityManager em;
 
     @Override

@@ -1,8 +1,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-        <h3 class="w-100 d-flex justify-content-center mt-5">Добавить клиента</h3>
+        <h3 class="w-100 d-flex justify-content-center mt-5">Добавить автора</h3>
         <div class="w-100 p-3 d-flex justify-content-center">
-            <form action="createCustomer" method="POST">
+            <form action="createAuthor" method="POST">
                 <div class="card border-0 m-2" style="width: 30rem;">
                     <div class="mb-3 row">
                         <label for="inputName" class="col-sm-3 col-form-label">Имя</label>
@@ -17,15 +17,9 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="inputPhone" class="col-sm-3 col-form-label">Телефон</label>
-                        <div class="col-sm-9">
-                          <input type="text" class="form-control" id="inputPhone" name="phone">
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="inputMoney" class="col-sm-3 col-form-label">Добавить денег</label>
-                        <div class="col-sm-9">
-                          <input type="text" class="form-control" id="inputPhone" name="money" value="${money}">
+                        <label for="inputYear" class="col-sm-4 col-form-label">Год рождения</label>
+                        <div class="col-sm-8">
+                          <input type="text" class="form-control" id="inputYear" name="birthYear">
                         </div>
                     </div>
                     <div class="mb-3 row">

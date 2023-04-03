@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import javax.persistence.Id;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,14 +30,16 @@ import session.CustomerFacade;
     "/addCustomer",
     "/createCustomer",
     "/listCustomers",
-    
+    "/addMoneyCustomer"
 
 })
 public class CustomerServlets extends HttpServlet {
-    
-    @EJB CustomerFacade customerFacade;
-    @EJB HistoryFacade historyFacade;
-    
+
+    @EJB
+    CustomerFacade customerFacade;
+    @EJB
+    HistoryFacade historyFacade;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -53,18 +56,20 @@ public class CustomerServlets extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/addCustomer":
-                request.getRequestDispatcher("/WEB-INF/readers/addReader.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/customers/addCustomer.jsp").forward(request, response);
                 break;
             case "/createCustomer":
                 String firstname = request.getParameter("firstname");
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
+                String money = request.getParameter("money");
                 Customer customer = new Customer();
                 customer.setPhone(phone);
                 customer.setFirstname(firstname);
                 customer.setLastname(lastname);
+                customer.setMoney(Float.valueOf(money));
                 customerFacade.create(customer);
-                request.setAttribute("info","Читатель успешно добавлен");
+                request.setAttribute("info", "Клиент успешно добавлен");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
             case "/listCustomers":
@@ -72,11 +77,22 @@ public class CustomerServlets extends HttpServlet {
                 List<Customer> listCustomers = customerFacade.findAll();
                 for (int i = 0; i < listCustomers.size(); i++) {
                     Customer c = listCustomers.get(i);
-                    mapCustomers.put(c, historyFacade.getSaleProduct(c)); 
+                    mapCustomers.put(c, historyFacade.getSaleProduct(c));
                 }
                 request.setAttribute("mapCustomers", mapCustomers);
                 request.getRequestDispatcher("/WEB-INF/customers/listCustomers.jsp").forward(request, response);
                 break;
+            case "/addMoneyCustomer":
+                Customer customers = new Customer();
+                String addMoney = request.getParameter("money"); //Из строки забираем значение
+                float addAccount = Float.valueOf(addMoney) + customers.getMoney(); //Производим добавление денег
+                customers.setMoney(addAccount); //сохраняем данные
+                request.setAttribute("info", "Деньги клиенту успешно добавлны");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                
+//                customer.setMoney(Float.valueOf(money));
+                
+//                customer.setMoney(Float.valueOf(money));
         }
     }
 

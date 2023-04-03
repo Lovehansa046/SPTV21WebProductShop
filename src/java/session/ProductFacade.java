@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class ProductFacade extends AbstractFacade<Product> {
 
-    @PersistenceContext(unitName = "SPTV21WebProductShopPU")
+    @PersistenceContext(unitName = "SPTV21WebLibraryPU")
     private EntityManager em;
 
     public ProductFacade(Class<Product> entityClass) {
